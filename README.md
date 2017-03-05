@@ -1,1 +1,1 @@
-# Crytpochallenges_Golang
+# Cryptochallenges_Golang
