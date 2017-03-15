@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"encoding/hex"
+	"strings"
+)
 
 /*
 Single-byte XOR cipher
@@ -16,7 +19,24 @@ How? Devise some method for "scoring" a piece of English plaintext. Character fr
 Achievement Unlocked
 You now have our permission to make "ETAOIN SHRDLU" jokes on Twitter.
 */
-
+func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string) {
+	hexString := ciphertext
+	byteString, _ := hex.DecodeString(hexString)
+	lowestVal := float32(999999999)
+	lowestChar := "aa"
+	plain := ""
+	for i := 0; i < 255; i++ {
+		xorCandidate := strings.Repeat(string(i), len(byteString))
+		hexXorCandidate := hex.EncodeToString([]byte(xorCandidate))
+		decodedXor, _ := hex.DecodeString(xorHexStrings(hexString, hexXorCandidate))
+		if score := scorePlaintext(string(decodedXor)); score < lowestVal {
+			lowestVal = score
+			lowestChar = string(i)
+			plain = string(decodedXor)
+		}
+	}
+	return lowestChar, plain
+}
 func scorePlaintext(candidate string) float32 {
 
 	//freqs:

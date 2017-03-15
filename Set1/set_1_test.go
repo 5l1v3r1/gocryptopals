@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
-	"strings"
 	"testing"
 )
 
@@ -24,20 +22,8 @@ func Test2(t *testing.T) {
 func Test3(t *testing.T) {
 	// wow this is a gross test, PLS REFACTOR ME
 	hexString := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-	byteString, _ := hex.DecodeString(hexString)
-	lowestVal := float32(99999)
-	lowestChar := "aa"
-	plain := ""
-	for i := 0; i < 255; i++ {
-		xorCandidate := strings.Repeat(string(i), len(byteString))
-		hexXorCandidate := hex.EncodeToString([]byte(xorCandidate))
-		decodedXor, _ := hex.DecodeString(xorHexStrings(hexString, hexXorCandidate))
-		if score := scorePlaintext(string(decodedXor)); score < lowestVal {
-			lowestVal = score
-			lowestChar = string(i)
-			plain = string(decodedXor)
-		}
-	}
-	fmt.Printf("%v, %v, %v\n", lowestVal, lowestChar, plain)
 
+	lowestChar, plain := singleByteXorNTest(hexString)
+	fmt.Printf("%v, %v\n", lowestChar, plain)
+	fmt.Println("Challenge 3 complete")
 }
