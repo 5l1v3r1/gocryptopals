@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -43,4 +44,17 @@ func Test4(t *testing.T) {
 	fmt.Printf("%v %v %v \n", lowestChar, plain, score)
 	fmt.Println("Challenge 4 complete")
 
+}
+
+func Test5(t *testing.T) {
+	fmt.Println("Test 5 Begin")
+	text := hex.EncodeToString([]byte("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"))
+	key := hex.EncodeToString([]byte("ICE"))
+	ciphertext := repeatingKeyXOR(text, key)
+	check := "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
+	if ciphertext != check {
+		fmt.Printf("%v\n%v\n", ciphertext, check)
+		t.Error("Ciphertext mismatch!")
+	}
+	fmt.Println("Challenge 5 complete")
 }
