@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"strings"
+	"unicode"
 )
 
 /*
@@ -19,9 +20,12 @@ How? Devise some method for "scoring" a piece of English plaintext. Character fr
 Achievement Unlocked
 You now have our permission to make "ETAOIN SHRDLU" jokes on Twitter.
 */
-func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string) {
+func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string, score float32) {
 	hexString := ciphertext
-	byteString, _ := hex.DecodeString(hexString)
+	byteString, err := hex.DecodeString(hexString)
+	if err != nil {
+		return "", "", 99999
+	}
 	lowestVal := float32(999999999)
 	lowestChar := "aa"
 	plain := ""
@@ -35,7 +39,7 @@ func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string) {
 			plain = string(decodedXor)
 		}
 	}
-	return lowestChar, plain
+	return lowestChar, plain, lowestVal
 }
 func scorePlaintext(candidate string) float32 {
 
@@ -63,6 +67,7 @@ func scorePlaintext(candidate string) float32 {
 	//This function may be updated for later challenges depending on how well it works
 
 	//for each letter of the english alphabet, do a chi-square test
+	candidate = strings.ToLower(candidate)
 	alphabet := "abcdefghijklmnopqrstuvwxyz \n.,;:!?'-'"
 	score := float32(0)
 	for _, letter := range alphabet {
@@ -70,6 +75,13 @@ func scorePlaintext(candidate string) float32 {
 		expected := freq[string(letter)]
 		score += ((count - expected) * (count - expected)) / expected
 	}
-
+	for _, letter := range candidate {
+		if strings.Contains(alphabet, string(letter)) {
+			continue
+		}
+		if !unicode.IsLetter(letter) && !unicode.IsNumber(letter) && !unicode.IsPunct(letter) {
+			score += 100
+		}
+	}
 	return score
 }
