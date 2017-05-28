@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
@@ -57,4 +58,28 @@ func Test5(t *testing.T) {
 		t.Error("Ciphertext mismatch!")
 	}
 	fmt.Println("Challenge 5 complete")
+}
+
+func Test6(t *testing.T) {
+
+	fmt.Println("Test 6 Begin")
+
+	content, err := ioutil.ReadFile("../resources/challenge6.txt")
+	if err != nil {
+		t.Error("file load error")
+	}
+	contentBytes, err := base64.StdEncoding.DecodeString(string(content))
+	if err != nil {
+		t.Error("b64 decode error")
+	}
+	if hamming("this is a test", "wokka wokka!!!") != 37 {
+		t.Error("Hamming function incorrect")
+	}
+
+	s := breakRepeatingKeyXor(string(contentBytes))
+	if s == "" {
+		t.Error("S blank!")
+	}
+	t.Error("Unknown solution (Remove this once challenge is complete!")
+	fmt.Println("Challenge 6 complete")
 }

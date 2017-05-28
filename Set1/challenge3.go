@@ -43,15 +43,6 @@ func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string, s
 }
 func scorePlaintext(candidate string) float32 {
 
-	//freqs:
-	/*
-	  commits := map[string]int{
-	    "rsc": 3711,
-	    "r":   2138,
-	    "gri": 1908,
-	    "adg": 912,
-	  }
-	*/
 	freq := map[string]float32{
 		"a": 8.167, "b": 1.492, "c": 2.782, "d": 4.253, "e": 12.702,
 		"f": 2.228, "g": 2.015, "h": 6.094, "i": 6.966, "j": 0.153,
