@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strings"
 )
@@ -54,32 +55,69 @@ func hamming(s1 string, s2 string) int {
 func breakRepeatingKeyXor(s1 string) string {
 
 	//get keysize
-
+	ks := getKeysize(s1)
 	// break ciphertext into blocks	of keysize length
-
+	chunks := chunker(s1, ks)
 	// transpose the blocks: one block of all first bytes, one of all second bytes, etc
-
+	transposed := transpose(chunks)
 	// send each block to the single byte xor solver. Get the output from that to have the key
+	//extractedKey := make([]string, ks)
+	for _, transposedBlock := range transposed {
+		fmt.Println(hex.EncodeToString([]byte(transposedBlock)))
+		// singleByteXorNTest(transposedBlock)
+		x, _, _ := singleByteXorNTest(hex.EncodeToString([]byte(transposedBlock)))
+		fmt.Println(x)
+	}
 	return ""
+}
+
+func transpose(ss []string) []string {
+	// first block will have the total size we need
+	ts := make([]string, len(ss[0]))
+	//iterate over each block
+	for _, block := range ss {
+		// iterate over each byte in the block
+		for i, b := range block {
+			//place byte in appropriate transposed block segment
+			ts[i] += string(b)
+		}
+	}
+	return ts
 }
 
 func getKeysize(s string) int {
 	//key range
-	//var fromKey = 4
-	//var toKey = 40
-
+	var fromKey = 4
+	var toKey = 400
+	min := float32(9999999)
+	size := -1
 	//for each keysize
+	for i := fromKey; i <= toKey; i++ {
+		//take the first keysize of bytes
+		k1 := s[0:i]
+		//and the second keysize of bytes
+		k2 := s[i : i*2]
+		//get hamming distance
+		dist := float32(hamming(string(k1), string(k2)))
+		//divide this by keysize (to normalize)
+		dist = float32(dist) / float32(i)
+		//remember the lowest hamming distance (it's probably the key)
+		if dist < min {
+			min = dist
+			size = i
+		}
+	}
+	return size
 
-	//take the first keysize of bytes
+}
 
-	//and the second keysize of bytes
-
-	//get hamming distance
-
-	//divide this by keysize (to normalize)
-
-	//remember the lowest hamming distance (it's probably the key)
-
-	return -1
-
+func chunker(s string, chunksize int) []string {
+	r := make([]string, (len(s)/chunksize)+1)
+	j := 0
+	for i := 0; i < len(s)-1; i += chunksize {
+		r[j] = s[i : i+chunksize]
+		j++
+	}
+	r[j] = s[(len(s)/chunksize)*chunksize:]
+	return r
 }

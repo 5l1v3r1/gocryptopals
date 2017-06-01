@@ -76,10 +76,38 @@ func Test6(t *testing.T) {
 		t.Error("Hamming function incorrect")
 	}
 
+	c := chunker("abacada", 2)
+	if len(c) == 4 {
+		if c[0] != "ab" {
+			t.Error("Chunker fail")
+		}
+
+		if c[3] != "a" {
+			t.Error("Chunker fail")
+		}
+	} else {
+		t.Error("Chunker fail")
+	}
+
+	lol := transpose(c)
+
+	if len(lol) == 2 {
+		if lol[0] != "aaaa" {
+			t.Error("transpose fail2")
+		}
+		if lol[1] != "bcd" {
+			t.Error("Transpose fail3")
+		}
+	} else {
+		t.Error("Transpose fail1")
+	}
+
 	s := breakRepeatingKeyXor(string(contentBytes))
+	//s := string(contentBytes)
+	//s = ""
 	if s == "" {
 		t.Error("S blank!")
 	}
-	t.Error("Unknown solution (Remove this once challenge is complete!")
+	t.Error("Unknown solution (Remove this once challenge is complete!)")
 	fmt.Println("Challenge 6 complete")
 }
