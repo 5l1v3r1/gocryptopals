@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"strings"
+)
+
 /*
 
 Break repeating-key XOR
@@ -32,7 +37,21 @@ We get more tech support questions for this challenge than any of the other ones
 */
 
 func hamming(s1 string, s2 string) int {
-	return -1
+	total := 0
+	for i, x := range s1 {
+		fmt.Println(string(x), string(s2[i]))
+		//for each byte
+		//xor byte with same position in s2
+		xord := byte(x) ^ byte(s2[i])
+		//convert result to binary
+		bin := fmt.Sprintf("%x %x %b", x, s2[i], xord)
+		total += strings.Count(bin, "1")
+		fmt.Println(bin)
+		//count 1's
+	}
+	fmt.Println(total)
+	return total
+
 }
 
 func breakRepeatingKeyXor(s1 string) string {
