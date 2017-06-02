@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/hex"
+	//"fmt"
 	"strings"
 	"unicode"
 )
@@ -33,6 +34,7 @@ func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string, s
 		xorCandidate := strings.Repeat(string(i), len(byteString))
 		hexXorCandidate := hex.EncodeToString([]byte(xorCandidate))
 		decodedXor, _ := hex.DecodeString(xorHexStrings(hexString, hexXorCandidate))
+		//fmt.Println()
 		if score := scorePlaintext(string(decodedXor)); score < lowestVal {
 			lowestVal = score
 			lowestChar = string(i)
@@ -59,7 +61,7 @@ func scorePlaintext(candidate string) float32 {
 
 	//for each letter of the english alphabet, do a chi-square test
 	candidate = strings.ToLower(candidate)
-	alphabet := "abcdefghijklmnopqrstuvwxyz \n.,;:!?'-'"
+	alphabet := "abcdefghijklmnopqrstuvwxyz \n.,;:!?'-"
 	score := float32(0)
 	for _, letter := range alphabet {
 		count := float32(strings.Count(candidate, string(letter)))
@@ -71,7 +73,10 @@ func scorePlaintext(candidate string) float32 {
 			continue
 		}
 		if !unicode.IsLetter(letter) && !unicode.IsNumber(letter) && !unicode.IsPunct(letter) {
-			score += 100
+			expected := float32(0.000000001)
+			count := float32(strings.Count(candidate, string(letter)))
+			score += ((count - expected) * (count - expected)) / expected
+			alphabet += string(letter)
 		}
 	}
 	return score

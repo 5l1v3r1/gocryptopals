@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -76,13 +77,13 @@ func Test6(t *testing.T) {
 		t.Error("Hamming function incorrect")
 	}
 
-	c := chunker("abacada", 2)
+	c := chunker([]byte("abacada"), 2)
 	if len(c) == 4 {
-		if c[0] != "ab" {
+		if !reflect.DeepEqual(c[0], []byte("ab")) {
 			t.Error("Chunker fail")
 		}
 
-		if c[3] != "a" {
+		if !reflect.DeepEqual(c[3], []byte("a")) {
 			t.Error("Chunker fail")
 		}
 	} else {
@@ -92,17 +93,17 @@ func Test6(t *testing.T) {
 	lol := transpose(c)
 
 	if len(lol) == 2 {
-		if lol[0] != "aaaa" {
-			t.Error("transpose fail2")
+		if !reflect.DeepEqual(lol[0], []byte("aaaa")) {
+			t.Error("transpose fail2", lol[0], []byte("aaaa"))
 		}
-		if lol[1] != "bcd" {
-			t.Error("Transpose fail3")
+		if !reflect.DeepEqual(lol[1], []byte("bcd")) {
+			t.Error("Transpose fail3", lol[1], []byte("aaaa"))
 		}
 	} else {
 		t.Error("Transpose fail1")
 	}
 
-	s := breakRepeatingKeyXor(string(contentBytes))
+	s := breakRepeatingKeyXor(contentBytes)
 	//s := string(contentBytes)
 	//s = ""
 	if s == "" {

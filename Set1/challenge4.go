@@ -23,6 +23,5 @@ func multiSingleByteXorNTest(rows []string) (bestchar string, plaintext string, 
 			plaintext = plain
 		}
 	}
-
 	return bestchar, plaintext, bestScore
 }

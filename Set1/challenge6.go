@@ -52,8 +52,9 @@ func hamming(s1 string, s2 string) int {
 
 }
 
-func breakRepeatingKeyXor(s1 string) string {
-
+func breakRepeatingKeyXor(s1 []byte) string {
+	// s1 is raw ciphertext bytes
+	hexS1 := hex.EncodeToString(s1)
 	//get keysize
 	ks := getKeysize(s1)
 	// break ciphertext into blocks	of keysize length
@@ -62,33 +63,40 @@ func breakRepeatingKeyXor(s1 string) string {
 	transposed := transpose(chunks)
 	// send each block to the single byte xor solver. Get the output from that to have the key
 	//extractedKey := make([]string, ks)
+	k := []byte("")
 	for _, transposedBlock := range transposed {
-		fmt.Println(hex.EncodeToString([]byte(transposedBlock)))
+		fmt.Println(hex.EncodeToString(transposedBlock))
 		// singleByteXorNTest(transposedBlock)
-		x, _, _ := singleByteXorNTest(hex.EncodeToString([]byte(transposedBlock)))
+		x, _, _ := singleByteXorNTest(hex.EncodeToString(transposedBlock))
 		fmt.Println(x)
+		k = append(k, byte(x[0]))
 	}
+	hexK := hex.EncodeToString(k)
+	fmt.Println(k, hexS1)
+	bkn := repeatingKeyXOR(hexK, hexS1) //outputs a hex string
+	rawbkn, _ := hex.DecodeString(bkn)
+	fmt.Println(string(rawbkn))
 	return ""
 }
 
-func transpose(ss []string) []string {
+func transpose(ss [][]byte) [][]byte {
 	// first block will have the total size we need
-	ts := make([]string, len(ss[0]))
+	ts := make([][]byte, len(ss[0]))
 	//iterate over each block
 	for _, block := range ss {
 		// iterate over each byte in the block
 		for i, b := range block {
 			//place byte in appropriate transposed block segment
-			ts[i] += string(b)
+			ts[i] = append(ts[i], b)
 		}
 	}
 	return ts
 }
 
-func getKeysize(s string) int {
+func getKeysize(s []byte) int {
 	//key range
-	var fromKey = 4
-	var toKey = 400
+	var fromKey = 20
+	var toKey = 40
 	min := float32(9999999)
 	size := -1
 	//for each keysize
@@ -111,13 +119,14 @@ func getKeysize(s string) int {
 
 }
 
-func chunker(s string, chunksize int) []string {
-	r := make([]string, (len(s)/chunksize)+1)
+func chunker(s []byte, chunksize int) [][]byte {
+	r := make([][]byte, (len(s)/chunksize)+1)
 	j := 0
 	for i := 0; i < len(s)-1; i += chunksize {
 		r[j] = s[i : i+chunksize]
 		j++
 	}
+
 	r[j] = s[(len(s)/chunksize)*chunksize:]
 	return r
 }
