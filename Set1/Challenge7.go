@@ -21,7 +21,7 @@ func aesECBDecrypt(ciphertext, key []byte) []byte {
 	out := make([]byte, 0)
 	buf := make([]byte, aes.BlockSize)
 	crypter, _ := aes.NewCipher(key)
-	for i := 0; i < len(ciphertext)-aes.BlockSize; i += aes.BlockSize {
+	for i := 0; i < len(ciphertext); i += aes.BlockSize {
 		crypter.Decrypt(buf, ciphertext[i:i+aes.BlockSize])
 		out = append(out, buf...)
 	}

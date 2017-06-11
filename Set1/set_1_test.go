@@ -145,6 +145,8 @@ func Test7(t *testing.T) {
 	if plain[0] == 0 || plain[40] == 0 {
 		t.Error("Bad decrypt:", string(plain))
 	}
+
+	fmt.Println(string(plain))
 	fmt.Println("Challenge 7 complete")
 }
 
