@@ -130,3 +130,41 @@ func Test6(t *testing.T) {
 	fmt.Println("Plaintext:\n", plaintext)
 	fmt.Println("Challenge 6 complete")
 }
+
+func Test7(t *testing.T) {
+	fmt.Println("Test 7 Begin")
+	content, err := ioutil.ReadFile("../resources/challenge7.txt")
+	if err != nil {
+		t.Error("file load error")
+	}
+	key := []byte("YELLOW SUBMARINE")
+
+	ciphertext, _ := base64.StdEncoding.DecodeString(string(content))
+	plain := aesECBDecrypt(ciphertext, key)
+
+	if plain[0] == 0 || plain[40] == 0 {
+		t.Error("Bad decrypt:", string(plain))
+	}
+	fmt.Println("Challenge 7 complete")
+}
+
+func Test8(t *testing.T) {
+	fmt.Println("Test 8 Begin")
+	content, err := ioutil.ReadFile("../resources/challenge8.txt")
+	if err != nil {
+		t.Error("file load error")
+	}
+	lines := strings.Split(string(content), "\x0d\n")
+	found := false
+	for i, x := range lines {
+		s, _ := hex.DecodeString(x)
+		if testRepeatedBlocks(s, 16) {
+			fmt.Println("Identified repeated block on line:", i)
+			found = true
+		}
+	}
+	if !found {
+		t.Error("No duplicate block found!?!?")
+	}
+	fmt.Println("Challenge 8 complete")
+}
