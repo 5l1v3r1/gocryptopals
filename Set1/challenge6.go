@@ -52,7 +52,7 @@ func hamming(s1 string, s2 string) int {
 
 }
 
-func breakRepeatingKeyXor(s1 []byte) string {
+func breakRepeatingKeyXor(s1 []byte) (string, []byte) {
 	// s1 is raw ciphertext bytes
 	hexS1 := hex.EncodeToString(s1)
 	//get keysize
@@ -65,18 +65,14 @@ func breakRepeatingKeyXor(s1 []byte) string {
 	//extractedKey := make([]string, ks)
 	k := []byte("")
 	for _, transposedBlock := range transposed {
-		fmt.Println(hex.EncodeToString(transposedBlock))
 		// singleByteXorNTest(transposedBlock)
 		x, _, _ := singleByteXorNTest(hex.EncodeToString(transposedBlock))
-		fmt.Println(x)
 		k = append(k, byte(x[0]))
 	}
 	hexK := hex.EncodeToString(k)
-	fmt.Println(k, hexS1)
 	bkn := repeatingKeyXOR(hexK, hexS1) //outputs a hex string
 	rawbkn, _ := hex.DecodeString(bkn)
-	fmt.Println(string(rawbkn))
-	return ""
+	return string(rawbkn), k
 }
 
 func transpose(ss [][]byte) [][]byte {
@@ -93,22 +89,25 @@ func transpose(ss [][]byte) [][]byte {
 	return ts
 }
 
+func normalisedHamming(s []byte, l int) float32 {
+	hamming_sum := float32(0)
+	for i := 0; i < (len(s)/l - 1); i++ {
+		hamming_sum += float32(hamming(string(s[i*l:(i+1)*l]), string(s[(i+1)*l:(i+2)*l])))
+	}
+	ham_avg := hamming_sum / float32(len(s)/l-1)
+	norm_ham := ham_avg / float32(l)
+	return norm_ham
+}
+
 func getKeysize(s []byte) int {
 	//key range
-	var fromKey = 20
-	var toKey = 40
+	var fromKey = 1
+	var toKey = 50
 	min := float32(9999999)
 	size := -1
 	//for each keysize
 	for i := fromKey; i <= toKey; i++ {
-		//take the first keysize of bytes
-		k1 := s[0:i]
-		//and the second keysize of bytes
-		k2 := s[i : i*2]
-		//get hamming distance
-		dist := float32(hamming(string(k1), string(k2)))
-		//divide this by keysize (to normalize)
-		dist = float32(dist) / float32(i)
+		dist := normalisedHamming(s, i)
 		//remember the lowest hamming distance (it's probably the key)
 		if dist < min {
 			min = dist
@@ -122,11 +121,13 @@ func getKeysize(s []byte) int {
 func chunker(s []byte, chunksize int) [][]byte {
 	r := make([][]byte, (len(s)/chunksize)+1)
 	j := 0
+
 	for i := 0; i < len(s)-1; i += chunksize {
 		r[j] = s[i : i+chunksize]
 		j++
 	}
-
-	r[j] = s[(len(s)/chunksize)*chunksize:]
+	if j < len(r) {
+		r[j] = s[(len(s)/chunksize)*chunksize:]
+	}
 	return r
 }

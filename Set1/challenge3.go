@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/hex"
-	//"fmt"
 	"strings"
-	"unicode"
 )
 
 /*
@@ -21,6 +19,9 @@ How? Devise some method for "scoring" a piece of English plaintext. Character fr
 Achievement Unlocked
 You now have our permission to make "ETAOIN SHRDLU" jokes on Twitter.
 */
+
+//this file needs refactoring
+
 func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string, score float32) {
 	hexString := ciphertext
 	byteString, err := hex.DecodeString(hexString)
@@ -28,13 +29,12 @@ func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string, s
 		return "", "", 99999
 	}
 	lowestVal := float32(999999999)
-	lowestChar := "aa"
+	lowestChar := ""
 	plain := ""
 	for i := 0; i < 255; i++ {
 		xorCandidate := strings.Repeat(string(i), len(byteString))
 		hexXorCandidate := hex.EncodeToString([]byte(xorCandidate))
 		decodedXor, _ := hex.DecodeString(xorHexStrings(hexString, hexXorCandidate))
-		//fmt.Println()
 		if score := scorePlaintext(string(decodedXor)); score < lowestVal {
 			lowestVal = score
 			lowestChar = string(i)
@@ -43,9 +43,9 @@ func singleByteXorNTest(ciphertext string) (bestChar string, plaintext string, s
 	}
 	return lowestChar, plain, lowestVal
 }
-func scorePlaintext(candidate string) float32 {
 
-	freq := map[string]float32{
+func scorePlaintext(candidate string) float32 {
+	unig := map[string]float32{
 		"a": 8.167, "b": 1.492, "c": 2.782, "d": 4.253, "e": 12.702,
 		"f": 2.228, "g": 2.015, "h": 6.094, "i": 6.966, "j": 0.153,
 		"k": 0.772, "l": 4.025, "m": 2.406, "n": 6.749, "o": 7.507,
@@ -55,29 +55,44 @@ func scorePlaintext(candidate string) float32 {
 		";": 0.32, ":": 0.34, "!": 0.33, "?": 0.56, "'": 2.43,
 		"-": 1.53,
 	}
-
-	//takes a string input, and gives a score based on how english it looks.
-	//This function may be updated for later challenges depending on how well it works
-
-	//for each letter of the english alphabet, do a chi-square test
-	candidate = strings.ToLower(candidate)
-	alphabet := "abcdefghijklmnopqrstuvwxyz \n.,;:!?'-"
 	score := float32(0)
-	for _, letter := range alphabet {
-		count := float32(strings.Count(candidate, string(letter)))
-		expected := freq[string(letter)]
-		score += ((count - expected) * (count - expected)) / expected
+	lowCand := strings.ToLower(candidate)
+	//check unigrams
+	for k, v := range unig {
+		score += chiSquare(lowCand, k, v)
 	}
+	//bump score for non-printables and uncommon symbols
 	for _, letter := range candidate {
-		if strings.Contains(alphabet, string(letter)) {
+		if letter == '\n' {
 			continue
 		}
-		if !unicode.IsLetter(letter) && !unicode.IsNumber(letter) && !unicode.IsPunct(letter) {
-			expected := float32(0.000000001)
-			count := float32(strings.Count(candidate, string(letter)))
-			score += ((count - expected) * (count - expected)) / expected
-			alphabet += string(letter)
+		if _, ok := unig[string(letter)]; ok {
+			continue
+		}
+		letterDec := int(letter)
+		if letterDec < 32 || letterDec > 126 {
+			score += chiSquare(lowCand, string(letter), 0.001)
+		} else if letterDec < 65 || letterDec > 122 || (letterDec < 97 && letterDec > 90) {
+			score += chiSquare(lowCand, string(letter), 0.01)
 		}
 	}
 	return score
+}
+
+// like strings.count but counts overlapping
+func countOverlapping(text string, substring string) int {
+	c := 0
+	for i := 0; i < (len(text) - len(substring)); i++ {
+		window := text[i : i+len(substring)]
+		if window == substring {
+			c++
+		}
+	}
+	return c
+}
+
+func chiSquare(text string, substring string, freq float32) float32 {
+	count := float32(countOverlapping(text, substring))
+	expected := freq * 0.01 * float32(len(text))
+	return ((count - expected) * (count - expected)) / expected
 }

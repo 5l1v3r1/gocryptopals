@@ -27,6 +27,14 @@ func Test2(t *testing.T) {
 
 func Test3(t *testing.T) {
 	fmt.Println("Test 3 Begin")
+	//test our english thingers
+	eng := "The english bit of text that is a bit longer than just a few words.\nThis should probably appear as enlgish in tests."
+	notEng := "aasldfkjoivjaodvij f aldskjfqew;klsnc dfwarfe}|}d 349r-0429fds.,aa sdpoifjaefp dfj;ds;sc a;saldkf esaorkap sa;lfdkafp"
+
+	if scorePlaintext(eng) > scorePlaintext(notEng) {
+		t.Error("English test failed.")
+	}
+
 	hexString := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 
 	lowestChar, plain, score := singleByteXorNTest(hexString)
@@ -43,6 +51,9 @@ func Test4(t *testing.T) {
 	}
 	lines := strings.Split(string(content), "\x0d\n")
 	lowestChar, plain, score := multiSingleByteXorNTest(lines)
+	if plain != "Now that the party is jumping\n" {
+		t.Error("Incorrect output")
+	}
 	fmt.Printf("%v %v %v \n", lowestChar, plain, score)
 	fmt.Println("Challenge 4 complete")
 
@@ -77,6 +88,9 @@ func Test6(t *testing.T) {
 		t.Error("Hamming function incorrect")
 	}
 
+	if normalisedHamming([]byte("this is a testwokka wokka!!!"), 14) != 37.0/14 {
+		t.Error("Norm Hamming incorrect", 37.0/14, normalisedHamming([]byte("this is a testwokkawokka!!!"), 14))
+	}
 	c := chunker([]byte("abacada"), 2)
 	if len(c) == 4 {
 		if !reflect.DeepEqual(c[0], []byte("ab")) {
@@ -94,21 +108,25 @@ func Test6(t *testing.T) {
 
 	if len(lol) == 2 {
 		if !reflect.DeepEqual(lol[0], []byte("aaaa")) {
-			t.Error("transpose fail2", lol[0], []byte("aaaa"))
+			t.Error("transpose fail2")
 		}
 		if !reflect.DeepEqual(lol[1], []byte("bcd")) {
-			t.Error("Transpose fail3", lol[1], []byte("aaaa"))
+			t.Error("Transpose fail3")
 		}
 	} else {
 		t.Error("Transpose fail1")
 	}
 
-	s := breakRepeatingKeyXor(contentBytes)
-	//s := string(contentBytes)
-	//s = ""
-	if s == "" {
+	plaintext, key := breakRepeatingKeyXor(contentBytes)
+
+	if len(key) != 29 {
+		t.Error("Key length incorrect: ", key)
+	}
+
+	if plaintext == "" {
 		t.Error("S blank!")
 	}
-	t.Error("Unknown solution (Remove this once challenge is complete!)")
+	fmt.Println("Key:\n", string(key))
+	fmt.Println("Plaintext:\n", plaintext)
 	fmt.Println("Challenge 6 complete")
 }
