@@ -1,4 +1,4 @@
-package main
+package Set1
 
 import "encoding/hex"
 

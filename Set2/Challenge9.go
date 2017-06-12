@@ -1,4 +1,9 @@
-package main
+package Set2
+
+import (
+	"fmt"
+	//"github.com/c-sto/Cryptochallenges_Golang/Set1"
+)
 
 /*
 
@@ -17,5 +22,11 @@ So: pad any block to a specific block length, by appending the number of bytes o
 */
 
 func PKCS7(inblocks []byte, length int) []byte {
-
+	padsize := length - (len(inblocks) % length)
+	out := inblocks
+	for i := 0; i < padsize; i++ {
+		out = append(out, byte(padsize))
+	}
+	fmt.Println("Padsize", padsize)
+	return out
 }
