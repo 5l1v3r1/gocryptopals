@@ -25,6 +25,7 @@ func Challenge1() {
 
 	var b64String = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
 	byteString, _ := hex.DecodeString(hexString) //hex to bytes
+
 	fmt.Println(string(byteString))
 	byteToBase64 := base64.StdEncoding.EncodeToString(byteString) //bytes to b64
 	fmt.Println(byteToBase64)

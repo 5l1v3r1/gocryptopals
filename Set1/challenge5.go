@@ -1,6 +1,11 @@
 package Set1
 
-import "encoding/hex"
+import (
+	"encoding/hex"
+	"fmt"
+
+	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+)
 
 /*
 
@@ -22,24 +27,15 @@ Encrypt a bunch of stuff using your repeating-key XOR function. Encrypt your mai
 
 */
 
-func repeatingKeyXOR(arg1 string, arg2 string) string {
-	//turn args to bytes
-	bytes1, _ := hex.DecodeString(arg1)
-	bytes2, _ := hex.DecodeString(arg2)
-	//set lengths
-	shortbytes := bytes1
-	longbytes := bytes2
-	if len(bytes1) > len(bytes2) {
-		shortbytes = bytes2
-		longbytes = bytes1
+func Challenge5() {
+	fmt.Println("Test 5 Begin")
+	text := hex.EncodeToString([]byte("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"))
+	key := hex.EncodeToString([]byte("ICE"))
+	ciphertext := cryptolib.RepeatingKeyXOR(text, key)
+	check := "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
+	if ciphertext != check {
+		fmt.Printf("%v\n%v\n", ciphertext, check)
+		panic("Ciphertext mismatch!")
 	}
-	ret := make([]byte, len(longbytes))
-	//xor the things
-	for i := 0; i < len(longbytes); i++ {
-		ret[i] = longbytes[i] ^ shortbytes[i%len(shortbytes)]
-	}
-
-	//turn return bytes back to hex
-	hexret := hex.EncodeToString(ret)
-	return string(hexret)
+	fmt.Println("Challenge 5 complete")
 }

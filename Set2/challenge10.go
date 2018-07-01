@@ -1,5 +1,13 @@
 package Set2
 
+import (
+	"encoding/base64"
+	"fmt"
+	"io/ioutil"
+
+	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+)
+
 /*
 
 Implement CBC mode
@@ -17,3 +25,19 @@ Don't cheat.
 Do not use OpenSSL's CBC code to do CBC mode, even to verify your results. What's the point of even doing this stuff if you aren't going to learn from it?
 
 */
+
+func Challenge10() {
+	fmt.Println("Begin Test 10")
+	content, err := ioutil.ReadFile("./resources/challenge10.txt")
+	if err != nil {
+		panic("file load error")
+	}
+
+	ciphertext, _ := base64.StdEncoding.DecodeString(string(content))
+	iv := []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	key := []byte("YELLOW SUBMARINE")
+	r := cryptolib.AESCBCDecrypt(ciphertext, key, iv)
+	fmt.Println(string(r))
+	fmt.Println("If the above is garbage, it failed")
+
+}

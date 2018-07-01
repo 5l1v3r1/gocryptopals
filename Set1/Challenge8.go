@@ -1,5 +1,14 @@
 package Set1
 
+import (
+	"encoding/hex"
+	"fmt"
+	"io/ioutil"
+	"strings"
+
+	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+)
+
 /*
 
 Detect AES in ECB mode
@@ -13,17 +22,23 @@ Remember that the problem with ECB is that it is stateless and deterministic; th
 
 */
 
-func testRepeatedBlocks(ciphertext []byte, blocksize int) bool {
-	mapset := make(map[string]bool)
-	//iterate over each block
-	for i := 0; i < len(ciphertext)-blocksize; i += blocksize {
-		//check for membership in the set-map thing
-		blk := string(ciphertext[i : i+blocksize])
-		if _, ok := mapset[blk]; ok {
-			return true
-		} else {
-			mapset[blk] = true
+func Challenge8() {
+	fmt.Println("Test 8 Begin")
+	content, err := ioutil.ReadFile("./resources/challenge8.txt")
+	if err != nil {
+		panic("file load error")
+	}
+	lines := strings.Split(string(content), "\n")
+	found := false
+	for i, x := range lines {
+		s, _ := hex.DecodeString(x)
+		if cryptolib.HasRepeatedBlocks(s, 16) {
+			fmt.Println("Identified repeated block on line:", i)
+			found = true
 		}
 	}
-	return false
+	if !found {
+		panic("No duplicate block found!?!?")
+	}
+	fmt.Println("Challenge 8 complete")
 }

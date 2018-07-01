@@ -1,5 +1,13 @@
 package Set1
 
+import (
+	"fmt"
+	"io/ioutil"
+	"strings"
+
+	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+)
+
 /*
 
 One of the 60-character strings in this file has been encrypted by single-character XOR.
@@ -10,18 +18,20 @@ Find it.
 
 */
 
-func multiSingleByteXorNTest(rows []string) (bestchar string, plaintext string, bestScore float32) {
-	bestScore = float32(99999999)
-	bestchar = "aa"
-	plaintext = ""
-
-	for _, line := range rows {
-		char, plain, score := singleByteXorNTest(line)
-		if score < bestScore {
-			bestScore = score
-			bestchar = char
-			plaintext = plain
-		}
+func Challenge4() {
+	fmt.Println("Test 4 Begin")
+	//load lines
+	content, err := ioutil.ReadFile("./resources/challenge4.txt")
+	if err != nil {
+		panic("file load error")
 	}
-	return bestchar, plaintext, bestScore
+	lines := strings.Split(string(content), "\n")
+	lowestChar, plain, score := cryptolib.MultiSingleByteXorNTest(lines)
+	if plain != "Now that the party is jumping\n" {
+		panic(fmt.Sprintf("Incorrect output: %v %v", plain, score))
+	}
+	fmt.Println("Lowest char, score")
+	fmt.Printf("%v, %v \n", lowestChar, score)
+	fmt.Println("Plaintext: ", plain)
+	fmt.Println("Challenge 4 complete")
 }

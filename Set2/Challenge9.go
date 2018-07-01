@@ -2,6 +2,9 @@ package Set2
 
 import (
 	"fmt"
+	"reflect"
+
+	"github.com/c-sto/cryptochallenges_golang/cryptolib"
 	//"github.com/c-sto/Cryptochallenges_Golang/Set1"
 )
 
@@ -21,12 +24,19 @@ So: pad any block to a specific block length, by appending the number of bytes o
 
 */
 
-func PKCS7(inblocks []byte, length int) []byte {
-	padsize := length - (len(inblocks) % length)
-	out := inblocks
-	for i := 0; i < padsize; i++ {
-		out = append(out, byte(padsize))
+func Challenge9() {
+	fmt.Println("Begin Test 9")
+	x := cryptolib.PKCS7([]byte("YELLOW SUBMARINE"), 20)
+	if !reflect.DeepEqual(x, []byte("YELLOW SUBMARINE\x04\x04\x04\x04")) {
+		panic(fmt.Sprintf("Bad padding: %v", x))
 	}
-	fmt.Println("Padsize", padsize)
-	return out
+	x = cryptolib.PKCS7([]byte("YELLOW SUBMARINE"), 19)
+	if !reflect.DeepEqual(x, []byte("YELLOW SUBMARINE\x03\x03\x03")) {
+		panic(fmt.Sprintf("Bad padding: %v", x))
+	}
+	x = cryptolib.PKCS7([]byte("YELLOW SUBMARINE"), 15)
+	if !reflect.DeepEqual(x, []byte("YELLOW SUBMARINE\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e")) {
+		panic(fmt.Sprintf("Bad padding: %v %v", x, []byte("YELLOW SUBMARINE\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e")))
+	}
+	fmt.Println("Test9 Complete!")
 }
