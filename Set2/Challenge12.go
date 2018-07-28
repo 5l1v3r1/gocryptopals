@@ -1,6 +1,7 @@
 package Set2
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"strings"
@@ -41,32 +42,66 @@ This is the first challenge we've given you whose solution will break real crypt
 
 func Challenge12() {
 	key := cryptolib.RandomKey()
-
 	//discover blocksize
-	bigblock := Challenge12Oracle([]byte(strings.Repeat("A", 32)), key)
+	bigblock := Challenge12Oracle([]byte(strings.Repeat("A", 100)), key)
 	blockSize := -1
-	for i := 128; i > 0; i-- {
+	for i := 3; i < 99; i++ {
 		if cryptolib.HasRepeatedBlocks(bigblock, i) {
 			blockSize = i
 			break
 		}
 
 	}
+	unknown := len(cryptolib.Chunker(Challenge12Oracle([]byte{}, key), blockSize))
 	fmt.Println("Detected ECB blocksize: ", blockSize)
-	//secretValue := Challenge12Oracle([]byte{}, key)
-	//for each secret byte
-	//for i := 1; i < len(secretValue); i++ {
-	//get short block
-	//shortBlock := Challenge12Oracle([]byte(strings.Repeat("A", blockSize-i)), key)
-	for x := 0; x < 255; x++ {
-		//byteVal := byte(x)
+	fmt.Println("Estimated sekret blocks:", unknown)
+	//hack the block-et
 
-		fmt.Println(string(byte(x)))
+	//smash as many A's in there as there is ciphertext to make sure we have enough blocks to compare against
+	//todo: do it with one block of A's instead of making it all fat and stuff (to simulate maybe constrained len input)
+	prefix := []byte(strings.Repeat("A", blockSize*(unknown)))
+	preChunks := cryptolib.Chunker(prefix, blockSize)
+	preChunks = cryptolib.PopFromBlock(preChunks)
+	known := []byte{}
+	//nested for loops, could also do a single for loop with number of bytes but I'm ok with this
+	for blocknumber := unknown; blocknumber > 0; blocknumber-- {
+		for byteinblock := 0; byteinblock < blockSize-1; byteinblock++ {
+			//smash through all possible bytes for the candidate block
+			for candidate := 0; candidate < 256; candidate++ {
+				checkerBlock := []byte{}
+				//if we don't have enough known bytes, the checker will be padded with known bytes (A's)
+				lastIndex := len(known) - blockSize + 1
+				if len(known) < blockSize {
+					checkerBlock = []byte(strings.Repeat("A", blockSize-len(known)-1))
+					lastIndex = 0
+				}
+				if len(known) > 0 {
+					substringKnown := known[lastIndex:]
+					checkerBlock = append(checkerBlock, substringKnown...)
+				}
+				//add the candidate byte
+				checkerBlock = append(checkerBlock, byte(candidate))
+
+				//the full prefix is the checker block (block[0]) and the prefix chunks that will be replaced with ciphertext
+				fullPre := append(append([][]byte{}, checkerBlock), preChunks...)
+				prefix = bytes.Join(fullPre, nil)
+
+				//encrypt the thing
+				lookyboi := Challenge12Oracle(prefix, key)
+				//check that our known block[0] matches the target block
+				if cryptolib.CompareBlocks(lookyboi, blockSize, 0, unknown) {
+					fmt.Print(string(byte(candidate)))
+					known = append(known, byte(candidate))
+					preChunks = cryptolib.PopFromBlock(preChunks)
+					break
+				}
+				if candidate == 255 {
+					panic(fmt.Sprintf("didn't find it"))
+				}
+			}
+		}
+
 	}
-	//get dictionaries until a block matches
-	//}
-
-	//fmt.Println(Challenge12Oracle([]byte("cats"), key))
 }
 
 func Challenge12Oracle(in, key []byte) []byte {

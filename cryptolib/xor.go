@@ -134,7 +134,7 @@ func BreakRepeatingKeyXor(s1 []byte) (string, []byte) {
 	//get keysize
 	ks := getKeysize(s1)
 	// break ciphertext into blocks	of keysize length
-	chunks := chunker(s1, ks)
+	chunks := Chunker(s1, ks)
 	// transpose the blocks: one block of all first bytes, one of all second bytes, etc
 	transposed := transpose(chunks)
 	// send each block to the single byte xor solver. Get the output from that to have the key

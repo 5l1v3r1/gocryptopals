@@ -1,26 +1,23 @@
 package cryptolib
 
 //Chunker splits a byte array into chunks of given size, returns an array of arrays
-func chunker(s []byte, chunksize int) [][]byte {
-	r := make([][]byte, (len(s)/chunksize)+1)
-	j := 0
-
-	for i := 0; i < len(s)-1; i += chunksize {
-		r[j] = s[i : i+chunksize]
-		j++
+func Chunker(b []byte, n int) (chunks [][]byte) {
+	//this is better, thanks swarlz
+	if n == 0 {
+		return [][]byte{}
 	}
-	if j < len(r) {
-		r[j] = s[(len(s)/chunksize)*chunksize:]
-	}
-
-	//clean blank slices idk why (fix this better)
-	re := [][]byte{}
-	for _, x := range r {
-		if len(x) > 0 {
-			re = append(re, x)
+	//while i is lower than len of b
+	for i := 0; i < len(b); i += n {
+		//find last boundary
+		nn := i + n
+		//chunk last section to end of array
+		if nn > len(b) {
+			nn = len(b)
 		}
+		//append chunks as it goes
+		chunks = append(chunks, b[i:nn])
 	}
-	return re
+	return chunks
 }
 
 func transpose(ss [][]byte) [][]byte {

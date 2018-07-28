@@ -64,7 +64,7 @@ func AESCBCEncrypt(plaintext, key, iv []byte) []byte {
 	//do IV
 	//plaintext = append(iv, plaintext...)
 
-	for i, block := range chunker(plaintext, aes.BlockSize) {
+	for i, block := range Chunker(plaintext, aes.BlockSize) {
 		if i == 0 {
 			//do IV
 			//xor
@@ -83,7 +83,7 @@ func AESCBCEncrypt(plaintext, key, iv []byte) []byte {
 func AESCBCDecrypt(ciphertext, key, iv []byte) []byte {
 	out := make([]byte, 0)
 	//work backwards (need last block)
-	blocks := chunker(ciphertext, aes.BlockSize)
+	blocks := Chunker(ciphertext, aes.BlockSize)
 	for i := len(blocks) - 1; i >= 0; i-- {
 		if i == 0 {
 			//fmt.Println("asdf")

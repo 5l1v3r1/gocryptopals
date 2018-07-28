@@ -48,11 +48,6 @@ func Challenge11() {
 	fmt.Println("ECB is dumb (hacked)")
 }
 
-func DetectECB(thing func([]byte)) bool {
-	return false
-
-}
-
 func DoCBCorECB(plain []byte) ([]byte, bool) {
 	isECB := true
 	b := make([]byte, 1)
