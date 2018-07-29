@@ -48,6 +48,8 @@ func main() {
 		Set2.Challenge11()
 	case 12:
 		Set2.Challenge12()
+	case 13:
+		Set2.Challenge13()
 	default:
 		fmt.Println("Can't find specified challenge")
 	}
