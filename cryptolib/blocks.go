@@ -22,16 +22,16 @@ func CompareBlocks(ciphertext []byte, blocksize, x, y int) bool {
 	return false
 }
 
-func HasRepeatedBlocks(ciphertext []byte, blocksize int) bool {
+func HasRepeatedBlocks(ciphertext []byte, blocksize int) (bool, int) {
 	chunks := Chunker(ciphertext, blocksize)
 	prev := []byte{}
-	for _, x := range chunks {
+	for i, x := range chunks {
 		if bytes.Compare(prev, x) == 0 {
-			return true
+			return true, i
 		}
 		prev = x
 	}
-	return false
+	return false, -1
 }
 
 //PopFromBlock removes one byte from the beginning of the first array while maintaining block segments

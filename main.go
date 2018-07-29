@@ -22,7 +22,7 @@ func main() {
 		panic("Bad challenge number")
 	}
 
-	//can probably tidy this up with some sort of reflect
+	//can probably tidy this up with some sort of reflect? idk
 	switch challNumber {
 	case 1:
 		Set1.Challenge1()
@@ -50,6 +50,8 @@ func main() {
 		Set2.Challenge12()
 	case 13:
 		Set2.Challenge13()
+	case 14:
+		Set2.Challenge14()
 	default:
 		fmt.Println("Can't find specified challenge")
 	}

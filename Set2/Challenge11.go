@@ -35,7 +35,7 @@ func Challenge11() {
 	for x := 0; x < 1000; x++ {
 		guess := false //default not ecb guess
 		ct, confirm := DoCBCorECB([]byte(strings.Repeat("a", 100)))
-		if cryptolib.HasRepeatedBlocks(ct, aes.BlockSize) {
+		if x, _ := cryptolib.HasRepeatedBlocks(ct, aes.BlockSize); x {
 			guess = true
 		}
 		if guess == confirm {

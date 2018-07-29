@@ -3,6 +3,7 @@ package cryptolib
 import (
 	"crypto/aes"
 	"crypto/rand"
+	"math/big"
 )
 
 func AESECBDecrypt(ciphertext, key []byte) []byte {
@@ -107,6 +108,20 @@ func AESCBCDecrypt(ciphertext, key, iv []byte) []byte {
 
 func RandomKey() []byte {
 	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		panic(err)
+	}
+	return b
+}
+
+//returns a random number of random bytes
+func RandomBytes() []byte {
+	num, e := rand.Int(rand.Reader, big.NewInt(64))
+	if e != nil {
+		panic(e)
+	}
+	b := make([]byte, num.Int64())
 	_, err := rand.Read(b)
 	if err != nil {
 		panic(err)

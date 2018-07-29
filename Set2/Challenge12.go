@@ -46,7 +46,71 @@ func Challenge12() {
 	bigblock := Challenge12Oracle([]byte(strings.Repeat("A", 100)), key)
 	blockSize := -1
 	for i := 3; i < 99; i++ {
-		if cryptolib.HasRepeatedBlocks(bigblock, i) {
+		if x, _ := cryptolib.HasRepeatedBlocks(bigblock, i); x {
+			blockSize = i
+			break
+		}
+
+	}
+	unknown := len(cryptolib.Chunker(Challenge12Oracle([]byte{}, key), blockSize))
+	fmt.Println("Detected ECB blocksize: ", blockSize)
+	fmt.Println("Estimated sekret blocks:", unknown)
+
+	//previous solution put A's in place of ciphertext. This solution will only use at most 2 blocks of A's
+	//pad := []byte(strings.Repeat("A", blockSize))
+	known := []byte{}
+
+	for blockIndex := 0; blockIndex < unknown; blockIndex++ {
+		for unknownByteIndex := 0; unknownByteIndex < blockSize; unknownByteIndex++ {
+
+			//generate our checker block
+			checkerBlock := []byte{}
+			//if we don't have enough known bytes, the checker will be padded with known bytes (A's)
+			lastIndex := len(known) - blockSize + 1
+			if len(known) < blockSize {
+				checkerBlock = []byte(strings.Repeat("A", blockSize-len(known)-1))
+				lastIndex = 0
+			}
+			if len(known) > 0 {
+				substringKnown := known[lastIndex:]
+				checkerBlock = append(checkerBlock, substringKnown...)
+			}
+
+			for candidate := 0; candidate < 256; candidate++ {
+				//append to candidate
+				checkerBlock = append(checkerBlock, byte(candidate))
+
+				//if we need to add the padding bytes because we don't know enough yet, make it so
+				checkerBlock = append(checkerBlock, []byte(strings.Repeat("A", blockSize-unknownByteIndex-1))...)
+
+				ct := Challenge12Oracle(checkerBlock, key)
+
+				//check if our block[0] matches the target
+				if cryptolib.CompareBlocks(ct, blockSize, 0, blockIndex+1) {
+					//fmt.Println(string(checkerBlock))
+					fmt.Print(string(byte(candidate)))
+					known = append(known, byte(candidate))
+					//fmt.Println("Hax", blockIndex, unknownByteIndex, byte(candidate))
+					break
+				}
+
+				//reset checkerboi
+				checkerBlock = checkerBlock[:blockSize-1]
+			}
+
+			//add the candidate byte
+			//checkerBlock = append(checkerBlock, byte(candidate))
+		}
+	}
+}
+
+func Challenge12_old() {
+	key := cryptolib.RandomKey()
+	//discover blocksize
+	bigblock := Challenge12Oracle([]byte(strings.Repeat("A", 100)), key)
+	blockSize := -1
+	for i := 3; i < 99; i++ {
+		if x, _ := cryptolib.HasRepeatedBlocks(bigblock, i); x {
 			blockSize = i
 			break
 		}

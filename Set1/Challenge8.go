@@ -32,7 +32,7 @@ func Challenge8() {
 	found := false
 	for i, x := range lines {
 		s, _ := hex.DecodeString(x)
-		if cryptolib.HasRepeatedBlocks(s, 16) {
+		if y, _ := cryptolib.HasRepeatedBlocks(s, 16); y {
 			fmt.Println("Identified repeated block on line:", i)
 			found = true
 		}
