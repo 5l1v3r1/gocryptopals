@@ -24,6 +24,7 @@ var randomPrefix = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
 
 func Challenge14() {
 	key = cryptolib.RandomKey()
+	randomPrefix = cryptolib.RandomBytes()
 	//Identify what a block of A's looks like (so we know where the injection is)
 	ct := Challenge14Oracle([]byte(strings.Repeat("A", 48)))
 
@@ -31,6 +32,7 @@ func Challenge14() {
 	if repeated, index := cryptolib.HasRepeatedBlocks(ct, 16); repeated {
 		knownBlock = cryptolib.Chunker(ct, 16)[index]
 	}
+
 	fmt.Println(knownBlock)
 	fmt.Println(cryptolib.Chunker(ct, 16))
 }
