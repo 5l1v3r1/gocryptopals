@@ -1,5 +1,14 @@
 package Set2
 
+import (
+	"bytes"
+	"crypto/aes"
+	"fmt"
+	"strings"
+
+	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+)
+
 /*
 CBC bitflipping attacks
 Generate a random AES key.
@@ -31,3 +40,78 @@ Produces the identical 1-bit error(/edit) in the next ciphertext block.
 Stop and think for a second.
 Before you implement this attack, answer this question: why does CBC mode have this property?
 */
+
+func Challenge16() {
+	key = cryptolib.RandomKey()
+	//blocksize := aes.BlockSize
+	x := Challenge16_Function1(strings.Repeat("A", 256))
+	y := false
+	var err error
+	//get count of ciphertext
+	chunks := cryptolib.Chunker(x, aes.BlockSize)
+	//blockCount := len(chunks)
+	for i := 0; i < 256; i++ {
+		//most of the encrypted string is known plaintext.
+		//Taking a gamble, but we assume block 10 and 11 will be known plaintext
+		//to decrypt block 11 into a known value, we decrypt the block, then xor it against the previous block (10)
+		//this means that p = aesdec(11) ^ block[10]
+		//which means that if we flip the bits in the last byte of block 10 and send block 11 as the last block
+		//we should be able to control the ciphertext
+		chunks[10] = cryptolib.XorBytes(
+			[]byte(strings.Repeat(string(byte(i)), 16)),
+			chunks[10],
+		)
+		//11th chunk should be all 1's at this point
+		//xor everything with 1's to make it 0's
+		chunks[10] = cryptolib.XorBytes(
+			[]byte(strings.Repeat(string(byte(1)), 16)),
+			chunks[10],
+		)
+		//we want to complete the block, so xor with the desired value to make the thing do the thing
+		chunks[10] = cryptolib.XorBytes(
+			cryptolib.PKCS7([]byte(";admin=true;"), 16),
+			chunks[10],
+		)
+
+		y, err = Challenge16_Function2(bytes.Join(chunks[:12], nil))
+		if err == nil {
+			//we know i will cause plaintex to decrypt to \x01
+			break
+		}
+	}
+	if y {
+		fmt.Println("Wow hacked!", err)
+	} else {
+		fmt.Println(y, err)
+	}
+
+}
+
+func Challenge16_Function2(input []byte) (bool, error) {
+	//decrypt
+	plaintext := cryptolib.AESCBCDecrypt(input[16:], key, input[:16])
+	//unpad
+	plaintext, err := cryptolib.PKCS7Unpad(plaintext, 16)
+	if err != nil {
+		return false, err
+	}
+	//check for string
+	return strings.Contains(string(plaintext), ";admin=true;"), nil
+
+}
+
+func Challenge16_Function1(input string) []byte {
+	//get rid of naughty vals
+	input = strings.Replace(input, "=", "", -1)
+	input = strings.Replace(input, ";", "", -1)
+	//concat
+	input = "comment1=cooking%20MCs;userdata=" + input + ";comment2=%20like%20a%20pound%20of%20bacon"
+	//pad
+	padded := cryptolib.PKCS7([]byte(input), 16)
+	//fmt.Println(padded)
+	//encrypt
+	iv := cryptolib.RandomKey()
+	encrypted := cryptolib.AESCBCEncrypt(padded, key, iv)
+	encrypted = append(iv, encrypted...)
+	return encrypted
+}

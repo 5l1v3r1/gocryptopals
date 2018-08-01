@@ -2,6 +2,7 @@ package cryptolib
 
 import (
 	"bytes"
+	"errors"
 )
 
 func PKCS7(inblocks []byte, length int) []byte {
@@ -11,6 +12,25 @@ func PKCS7(inblocks []byte, length int) []byte {
 		out = append(out, byte(padsize))
 	}
 	return out
+}
+
+func PKCS7Unpad(inval []byte, blocksize int) ([]byte, error) {
+	x := int(inval[len(inval)-1])
+	if x == 0 || blocksize < x {
+		return nil, errors.New("Padding error")
+	}
+	count := 0
+	for i := len(inval) - 1; i >= 0 && count < x; i-- {
+		if int(inval[i]) == x {
+			count++
+			continue
+		} else {
+			return nil, errors.New("Padding error")
+		}
+	}
+	//return unpadded valz
+	r := inval[:len(inval)-x]
+	return r, nil
 }
 
 //CompareBlocks will compare blocks indexed at x and y, and return true if they are identical

@@ -1,5 +1,11 @@
 package Set3
 
+import (
+	"math/rand"
+	"strings"
+	"time"
+)
+
 /*
 The CBC padding oracle
 This is the best-known attack on modern block-cipher cryptography.
@@ -43,3 +49,34 @@ So you can assume that if you corrupt a decryption AND it had valid padding, you
 
 It is easy to get tripped up on the fact that CBC plaintexts are "padded". Padding oracles have nothing to do with the actual padding on a CBC plaintext. It's an attack that targets a specific bit of code that handles decryption. You can mount a padding oracle on any CBC block, whether it's padded or not.
 */
+
+var key = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6}
+
+func Challenge17() {
+	Challenge17_Func1()
+}
+
+func Challenge17_Func1() []byte {
+	rand.Seed(time.Now().UnixNano()) //this is not a secure random, but it will do I guess
+
+	blob := `MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=
+MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=
+MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw==
+MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg==
+MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl
+MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA==
+MDAwMDA2QW5kIGEgaGlnaCBoYXQgd2l0aCBhIHNvdXBlZCB1cCB0ZW1wbw==
+MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8=
+MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g=
+MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93`
+
+	blobs := strings.Split(blob, "\n")
+
+	//select random blob
+	rand.Shuffle(len(blobs), func(i, j int) {
+		blobs[i], blobs[j] = blobs[j], blobs[i]
+	})
+	//theBlob := blobs[0]
+	return []byte{}
+
+}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/c-sto/cryptochallenges_golang/Set1"
 	"github.com/c-sto/cryptochallenges_golang/Set2"
+	"github.com/c-sto/cryptochallenges_golang/Set3"
 )
 
 func main() {
@@ -52,6 +53,12 @@ func main() {
 		Set2.Challenge13()
 	case 14:
 		Set2.Challenge14()
+	case 15:
+		Set2.Challenge15()
+	case 16:
+		Set2.Challenge16()
+	case 17:
+		Set3.Challenge17()
 	default:
 		fmt.Println("Can't find specified challenge")
 	}
