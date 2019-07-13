@@ -1,8 +1,10 @@
-package cryptolib
+package padding
 
 import (
 	"bytes"
 	"errors"
+
+	"github.com/c-sto/gocryptopals/pkg/cryptobytes"
 )
 
 func PKCS7(inblocks []byte, length int) []byte {
@@ -35,7 +37,7 @@ func PKCS7Unpad(inval []byte, blocksize int) ([]byte, error) {
 
 //CompareBlocks will compare blocks indexed at x and y, and return true if they are identical
 func CompareBlocks(ciphertext []byte, blocksize, x, y int) bool {
-	chunks := Chunker(ciphertext, blocksize)
+	chunks := cryptobytes.Chunker(ciphertext, blocksize)
 	if bytes.Compare(chunks[x], chunks[y]) == 0 {
 		return true
 	}
@@ -43,13 +45,14 @@ func CompareBlocks(ciphertext []byte, blocksize, x, y int) bool {
 }
 
 func HasRepeatedBlocks(ciphertext []byte, blocksize int) (bool, int) {
-	chunks := Chunker(ciphertext, blocksize)
-	prev := []byte{}
-	for i, x := range chunks {
-		if bytes.Compare(prev, x) == 0 {
-			return true, i
+	chunks := cryptobytes.Chunker(ciphertext, blocksize)
+	for i := range chunks {
+		for j := range chunks {
+
+			if i != j && bytes.Compare(chunks[i], chunks[j]) == 0 {
+				return true, i
+			}
 		}
-		prev = x
 	}
 	return false, -1
 }
@@ -58,6 +61,6 @@ func HasRepeatedBlocks(ciphertext []byte, blocksize int) (bool, int) {
 func PopFromBlock(blocks [][]byte) (r [][]byte) {
 	bb := bytes.Join(blocks, nil)
 	bb = bb[1:len(bb)]
-	r = Chunker(bb, len(blocks[0]))
+	r = cryptobytes.Chunker(bb, len(blocks[0]))
 	return
 }

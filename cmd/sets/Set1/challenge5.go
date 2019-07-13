@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/pkg/xor"
 )
 
 /*
@@ -31,7 +31,7 @@ func Challenge5() {
 	fmt.Println("Test 5 Begin")
 	text := hex.EncodeToString([]byte("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"))
 	key := hex.EncodeToString([]byte("ICE"))
-	ciphertext := cryptolib.RepeatingKeyXOR(text, key)
+	ciphertext := xor.RepeatingKeyXOR(text, key)
 	check := "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
 	if ciphertext != check {
 		fmt.Printf("%v\n%v\n", ciphertext, check)

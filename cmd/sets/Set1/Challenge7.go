@@ -3,9 +3,10 @@ package Set1
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/asset"
+
+	"github.com/c-sto/gocryptopals/pkg/aes"
 )
 
 /*
@@ -26,14 +27,14 @@ You can obviously decrypt this using the OpenSSL command-line tool, but we're ha
 func Challenge7() {
 
 	fmt.Println("Test 7 Begin")
-	content, err := ioutil.ReadFile("./resources/challenge7.txt")
+	content, err := asset.Challenge("challenge7.txt")
 	if err != nil {
 		panic("file load error")
 	}
 	key := []byte("YELLOW SUBMARINE")
 
 	ciphertext, _ := base64.StdEncoding.DecodeString(string(content))
-	plain := cryptolib.AESECBDecrypt(ciphertext, key)
+	plain := aes.AESECBDecrypt(ciphertext, key)
 
 	if plain[0] == 0 || plain[40] == 0 {
 		panic("Bad decrypt: " + string(plain))

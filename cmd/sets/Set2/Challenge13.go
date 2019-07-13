@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/pkg/aes"
+	"github.com/c-sto/gocryptopals/pkg/cryptobytes"
 )
 
 /*
@@ -47,7 +48,7 @@ Using only the user input to profile_for() (as an oracle to generate "valid" cip
 var key = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6}
 
 func Challenge13() {
-	key = cryptolib.RandomKey()
+	key = aes.RandomKey()
 	//the goal of this challenge is to turn an encrypted profile blob into a 'valid' decryption that sets the user's password as 'admin'
 	c := profile_for("te@test.net")
 	fmt.Println(isAdmin(c))
@@ -69,13 +70,13 @@ func Challenge13() {
 	if e != nil {
 		panic(e)
 	}
-	chunkPad := cryptolib.Chunker(decodedPad, 16)
-	chunkC := cryptolib.Chunker(decodedC, 16)
+	chunkPad := cryptobytes.Chunker(decodedPad, 16)
+	chunkC := cryptobytes.Chunker(decodedC, 16)
 	chunkC[2] = chunkPad[1]
 
 	forgedString := hex.EncodeToString(bytes.Join(chunkC, nil))
 
-	fmt.Println(cryptolib.Chunker(decodedPad, 16))
+	fmt.Println(cryptobytes.Chunker(decodedPad, 16))
 	fmt.Println(isAdmin(forgedString))
 
 }
@@ -85,7 +86,7 @@ func profile_for(email string) string {
 	s := "email=%s&uid=10&role=user"
 	encoded := url.QueryEscape(email)
 	r := fmt.Sprintf(s, encoded)
-	v := cryptolib.AESECBEncrypt([]byte(r), key)
+	v := aes.AESECBEncrypt([]byte(r), key)
 	r = hex.EncodeToString(v)
 	return r
 }
@@ -110,6 +111,6 @@ func parseCookie(s string) (values url.Values, err error) {
 	if e != nil {
 		return nil, e
 	}
-	p := cryptolib.AESECBDecrypt(b, key)
+	p := aes.AESECBDecrypt(b, key)
 	return url.ParseQuery(string(p))
 }

@@ -1,4 +1,6 @@
-package cryptolib
+package cryptobytes
+
+import "github.com/c-sto/gocryptopals/pkg/lang"
 
 //Chunker splits a byte array into chunks of given size, returns an array of arrays
 func Chunker(b []byte, n int) (chunks [][]byte) {
@@ -20,7 +22,7 @@ func Chunker(b []byte, n int) (chunks [][]byte) {
 	return chunks
 }
 
-func transpose(ss [][]byte) [][]byte {
+func Transpose(ss [][]byte) [][]byte {
 	// first block will have the total size we need
 	ts := make([][]byte, len(ss[0]))
 	//iterate over each block
@@ -34,10 +36,10 @@ func transpose(ss [][]byte) [][]byte {
 	return ts
 }
 
-func normalisedHamming(s []byte, l int) float32 {
+func NormalisedHamming(s []byte, l int) float32 {
 	hamming_sum := float32(0)
 	for i := 0; i < (len(s)/l - 1); i++ {
-		hamming_sum += float32(Hamming(string(s[i*l:(i+1)*l]), string(s[(i+1)*l:(i+2)*l])))
+		hamming_sum += float32(lang.Hamming(string(s[i*l:(i+1)*l]), string(s[(i+1)*l:(i+2)*l])))
 	}
 	ham_avg := hamming_sum / float32(len(s)/l-1)
 	norm_ham := ham_avg / float32(l)

@@ -1,7 +1,4 @@
-# Cryptochallenges_Golang
+# GoCryptopals
 
 
-Run `go test` in the set directory of choice
-
-
-The goal of this will be to make the solutions modular, so that they may be re-used if needed
+Go solutions to cryptopals sets, minimal usage of libraries (hopefully)

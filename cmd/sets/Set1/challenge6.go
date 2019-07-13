@@ -3,9 +3,11 @@ package Set1
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/asset"
+
+	"github.com/c-sto/gocryptopals/pkg/lang"
+	"github.com/c-sto/gocryptopals/pkg/xor"
 )
 
 /*
@@ -42,7 +44,7 @@ We get more tech support questions for this challenge than any of the other ones
 func Challenge6() {
 	fmt.Println("Test 6 Begin")
 
-	content, err := ioutil.ReadFile("./resources/challenge6.txt")
+	content, err := asset.Challenge("challenge6.txt")
 	if err != nil {
 		panic("file load error")
 	}
@@ -53,11 +55,11 @@ func Challenge6() {
 		panic("b64 decode error")
 	}
 
-	if cryptolib.Hamming("this is a test", "wokka wokka!!!") != 37 {
+	if lang.Hamming("this is a test", "wokka wokka!!!") != 37 {
 		panic("Hamming function incorrect")
 	}
 
-	plaintext, key := cryptolib.BreakRepeatingKeyXor(contentBytes)
+	plaintext, key := xor.BreakRepeatingKeyXor(contentBytes)
 
 	if len(key) != 29 { //hax (we know the key len, this is mostly for debugging to make sure it's not bork)
 		panic(fmt.Sprintf("Key length incorrect: %v", key))

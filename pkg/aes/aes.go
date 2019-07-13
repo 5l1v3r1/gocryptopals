@@ -1,9 +1,12 @@
-package cryptolib
+package aes
 
 import (
 	"crypto/aes"
 	"crypto/rand"
 	"math/big"
+
+	"github.com/c-sto/gocryptopals/pkg/cryptobytes"
+	"github.com/c-sto/gocryptopals/pkg/xor"
 )
 
 func AESECBDecrypt(ciphertext, key []byte) []byte {
@@ -42,6 +45,8 @@ func aESEncrypt(block, key []byte) []byte {
 	return ret
 }
 
+const BlockSize = aes.BlockSize
+
 //In CBC mode, each ciphertext block is added to the next plaintext block
 //before the next call to the cipher core.
 
@@ -64,18 +69,18 @@ func AESCBCEncrypt(plaintext, key, iv []byte) []byte {
 	out := make([]byte, 0)
 	//do IV
 	//plaintext = append(iv, plaintext...)
-	blocks := Chunker(plaintext, aes.BlockSize)
+	blocks := cryptobytes.Chunker(plaintext, aes.BlockSize)
 	for i, block := range blocks {
 		if i == 0 {
 			//do IV
 			//xor
-			x := XorBytes(iv, block)
+			x := xor.XorBytes(iv, block)
 			//encrypt
 			out = append(out, aESEncrypt(x, key)...)
 		} else {
 			//do previous block
-			completed := Chunker(out, aes.BlockSize)
-			x := XorBytes(completed[i-1], block)
+			completed := cryptobytes.Chunker(out, aes.BlockSize)
+			x := xor.XorBytes(completed[i-1], block)
 			out = append(out, aESEncrypt(x, key)...)
 
 		}
@@ -87,19 +92,19 @@ func AESCBCEncrypt(plaintext, key, iv []byte) []byte {
 func AESCBCDecrypt(ciphertext, key, iv []byte) []byte {
 	out := make([]byte, 0)
 	//work backwards (need last block)
-	blocks := Chunker(ciphertext, aes.BlockSize)
+	blocks := cryptobytes.Chunker(ciphertext, aes.BlockSize)
 	for i := len(blocks) - 1; i >= 0; i-- {
 		if i == 0 {
 			//decrypt block
 			b := aESDecrypt(blocks[i], key)
 			//xor against previous block
-			x := XorBytes(b, iv)
+			x := xor.XorBytes(b, iv)
 			out = append(x, out...)
 		} else {
 			//decrypt block
 			b := aESDecrypt(blocks[i], key)
 			//xor against previous block
-			x := XorBytes(b, blocks[i-1])
+			x := xor.XorBytes(b, blocks[i-1])
 			out = append(x, out...)
 		}
 	}

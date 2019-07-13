@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	caes "github.com/c-sto/gocryptopals/pkg/aes"
+	"github.com/c-sto/gocryptopals/pkg/padding"
 )
 
 /*
@@ -35,7 +36,7 @@ func Challenge11() {
 	for x := 0; x < 1000; x++ {
 		guess := false //default not ecb guess
 		ct, confirm := DoCBCorECB([]byte(strings.Repeat("a", 100)))
-		if x, _ := cryptolib.HasRepeatedBlocks(ct, aes.BlockSize); x {
+		if x, _ := padding.HasRepeatedBlocks(ct, aes.BlockSize); x {
 			guess = true
 		}
 		if guess == confirm {
@@ -66,9 +67,9 @@ func DoCBCorECB(plain []byte) ([]byte, bool) {
 	plain = append(preBytes, plain...)
 	plain = append(plain, postBytes...)
 	if isECB {
-		b = cryptolib.AESECBEncrypt(cryptolib.PKCS7(plain, 16), cryptolib.RandomKey())
+		b = caes.AESECBEncrypt(padding.PKCS7(plain, 16), caes.RandomKey())
 	} else {
-		b = cryptolib.AESCBCEncrypt(cryptolib.PKCS7(plain, 16), cryptolib.RandomKey(), cryptolib.RandomKey())
+		b = caes.AESCBCEncrypt(padding.PKCS7(plain, 16), caes.RandomKey(), caes.RandomKey())
 	}
 	return b, isECB
 }

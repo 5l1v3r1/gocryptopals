@@ -3,7 +3,7 @@ package Set2
 import (
 	"fmt"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/pkg/padding"
 )
 
 /*
@@ -31,17 +31,17 @@ func Challenge15() {
 	s2 := []byte("ICE ICE BABY\x05\x05\x05\x05")
 	s3 := []byte("ICE ICE BABY\x01\x02\x03\x04")
 
-	_, err := cryptolib.PKCS7Unpad(s1, 16)
+	_, err := padding.PKCS7Unpad(s1, 16)
 	if err != nil {
 		panic("fail s1")
 	}
 
-	_, err = cryptolib.PKCS7Unpad(s2, 16)
+	_, err = padding.PKCS7Unpad(s2, 16)
 	if err == nil {
 		panic("fail s2")
 	}
 
-	_, err = cryptolib.PKCS7Unpad(s3, 16)
+	_, err = padding.PKCS7Unpad(s3, 16)
 	if err == nil {
 		panic("fail s3")
 	}

@@ -1,4 +1,4 @@
-package cryptolib
+package lang
 
 import (
 	"fmt"

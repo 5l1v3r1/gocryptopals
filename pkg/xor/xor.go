@@ -1,9 +1,12 @@
-package cryptolib
+package xor
 
 import (
 	"encoding/hex"
 	"strings"
 	"sync"
+
+	"github.com/c-sto/gocryptopals/pkg/cryptobytes"
+	"github.com/c-sto/gocryptopals/pkg/lang"
 )
 
 func XorBytes(b1, b2 []byte) []byte {
@@ -52,7 +55,7 @@ func SingleByteXorNTest(ciphertext string) (bestChar string, plaintext string, s
 		xorCandidate := strings.Repeat(string(i), len(byteString))
 		hexXorCandidate := hex.EncodeToString([]byte(xorCandidate))
 		decodedXor, _ := hex.DecodeString(XorHexStrings(hexString, hexXorCandidate))
-		if score := ScorePlaintext(string(decodedXor)); score < lowestVal {
+		if score := lang.ScorePlaintext(string(decodedXor)); score < lowestVal {
 			lowestVal = score
 			lowestChar = string(i)
 			plain = string(decodedXor)
@@ -134,9 +137,9 @@ func BreakRepeatingKeyXor(s1 []byte) (string, []byte) {
 	//get keysize
 	ks := getKeysize(s1)
 	// break ciphertext into blocks	of keysize length
-	chunks := Chunker(s1, ks)
+	chunks := cryptobytes.Chunker(s1, ks)
 	// transpose the blocks: one block of all first bytes, one of all second bytes, etc
-	transposed := transpose(chunks)
+	transposed := cryptobytes.Transpose(chunks)
 	// send each block to the single byte xor solver. Get the output from that to have the key
 	//extractedKey := make([]string, ks)
 	k := []byte("")
@@ -160,7 +163,7 @@ func getKeysize(s []byte) int {
 	size := -1
 	//for each keysize
 	for i := fromKey; i <= toKey; i++ {
-		dist := normalisedHamming(s, i)
+		dist := cryptobytes.NormalisedHamming(s, i)
 		//remember the lowest hamming distance (it's probably the key)
 		if dist < min {
 			min = dist

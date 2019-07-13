@@ -3,7 +3,7 @@ package Set1
 import (
 	"fmt"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/pkg/xor"
 )
 
 /*
@@ -28,7 +28,7 @@ func Challenge3() {
 
 	hexString := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 
-	lowestChar, plain, score := cryptolib.SingleByteXorNTest(hexString)
+	lowestChar, plain, score := xor.SingleByteXorNTest(hexString)
 	fmt.Printf("%v, %v, %v\n", lowestChar, plain, score)
 	fmt.Println("Challenge 3 complete")
 }

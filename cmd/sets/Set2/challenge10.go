@@ -3,9 +3,9 @@ package Set2
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/asset"
+	"github.com/c-sto/gocryptopals/pkg/aes"
 )
 
 /*
@@ -28,7 +28,7 @@ Do not use OpenSSL's CBC code to do CBC mode, even to verify your results. What'
 
 func Challenge10() {
 	fmt.Println("Begin Test 10")
-	content, err := ioutil.ReadFile("./resources/challenge10.txt")
+	content, err := asset.Challenge("challenge10.txt")
 	if err != nil {
 		panic("file load error")
 	}
@@ -36,7 +36,7 @@ func Challenge10() {
 	ciphertext, _ := base64.StdEncoding.DecodeString(string(content))
 	iv := []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	key := []byte("YELLOW SUBMARINE")
-	r := cryptolib.AESCBCDecrypt(ciphertext, key, iv)
+	r := aes.AESCBCDecrypt(ciphertext, key, iv)
 	fmt.Println(string(r))
 	fmt.Println("If the above is garbage, it failed")
 

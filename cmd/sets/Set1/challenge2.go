@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/pkg/xor"
 )
 
 /*
@@ -26,7 +26,8 @@ If your function works properly, then when you feed it the string:
 
 func Challenge2() {
 	fmt.Println("Test 2 Begin")
-	v := cryptolib.XorHexStrings("1c0111001f010100061a024b53535009181c", "686974207468652062756c6c277320657965")
+
+	v := xor.XorHexStrings("1c0111001f010100061a024b53535009181c", "686974207468652062756c6c277320657965")
 	if v == "746865206b696420646f6e277420706c6179" {
 		fmt.Println("Challenge 2 complete")
 		s, _ := hex.DecodeString(v)

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/pkg/aes"
+	"github.com/c-sto/gocryptopals/pkg/cryptobytes"
+	"github.com/c-sto/gocryptopals/pkg/padding"
 )
 
 /*Byte-at-a-time ECB decryption (Simple)
@@ -40,18 +42,18 @@ This is the first challenge we've given you whose solution will break real crypt
 */
 
 func Challenge12() {
-	key := cryptolib.RandomKey()
+	key := aes.RandomKey()
 	//discover blocksize
 	bigblock := Challenge12Oracle([]byte(strings.Repeat("A", 100)), key)
 	blockSize := -1
 	for i := 3; i < 99; i++ {
-		if x, _ := cryptolib.HasRepeatedBlocks(bigblock, i); x {
+		if x, _ := padding.HasRepeatedBlocks(bigblock, i); x {
 			blockSize = i
 			break
 		}
 
 	}
-	unknown := len(cryptolib.Chunker(Challenge12Oracle([]byte{}, key), blockSize))
+	unknown := len(cryptobytes.Chunker(Challenge12Oracle([]byte{}, key), blockSize))
 	fmt.Println("Detected ECB blocksize: ", blockSize)
 	fmt.Println("Estimated sekret blocks:", unknown)
 
@@ -85,7 +87,7 @@ func Challenge12() {
 				ct := Challenge12Oracle(checkerBlock, key)
 
 				//check if our block[0] matches the target
-				if cryptolib.CompareBlocks(ct, blockSize, 0, blockIndex+1) {
+				if padding.CompareBlocks(ct, blockSize, 0, blockIndex+1) {
 					//fmt.Println(string(checkerBlock))
 					fmt.Print(string(byte(candidate)))
 					known = append(known, byte(candidate))
@@ -110,5 +112,5 @@ YnkK`
 	if err != nil {
 		panic(err)
 	}
-	return cryptolib.AESECBEncrypt(append(in, decodedSecret...), key)
+	return aes.AESECBEncrypt(append(in, decodedSecret...), key)
 }

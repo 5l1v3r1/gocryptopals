@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/pkg/aes"
+	"github.com/c-sto/gocryptopals/pkg/cryptobytes"
+	"github.com/c-sto/gocryptopals/pkg/padding"
 )
 
 /*
@@ -23,20 +25,20 @@ Think "STIMULUS" and "RESPONSE".
 var randomPrefix = []byte{1, 2}
 
 func Challenge14() {
-	key = cryptolib.RandomKey()
-	//randomPrefix = cryptolib.RandomBytes()
+	key = aes.RandomKey()
+	//randomPrefix = .RandomBytes()
 	blockSize := 16
 	padCount := 48
 	//Identify what a block of A's looks like (so we know where the injection is)
 	ct := Challenge14Oracle([]byte(strings.Repeat("A", padCount)))
 
-	_, knownIndex := cryptolib.HasRepeatedBlocks(ct, 16)
+	_, knownIndex := padding.HasRepeatedBlocks(ct, 16)
 	//reduce the repeat count until the duplicate disappears
 	for { //go and it's stupid scopes
 		padCount--
 		ct = Challenge14Oracle([]byte(strings.Repeat("A", padCount)))
 
-		y, _ := cryptolib.HasRepeatedBlocks(ct, 16)
+		y, _ := padding.HasRepeatedBlocks(ct, 16)
 		if !y || padCount < 1 {
 			break
 		}
@@ -46,7 +48,7 @@ func Challenge14() {
 	padCount++
 	standingPrefix := []byte(strings.Repeat("A", (padCount)-(16*2)))
 
-	unknown := len(cryptolib.Chunker(Challenge14Oracle([]byte(strings.Repeat("A", padCount))), 16)) - (knownIndex + 1)
+	unknown := len(cryptobytes.Chunker(Challenge14Oracle([]byte(strings.Repeat("A", padCount))), 16)) - (knownIndex + 1)
 
 	//BEGIN COPYPASTAD CODE FROM 12
 	known := []byte{}
@@ -74,9 +76,9 @@ func Challenge14() {
 				checkerBlock = append(checkerBlock, []byte(strings.Repeat("A", blockSize-unknownByteIndex-1))...)
 
 				ct := Challenge14Oracle(checkerBlock)
-				//fmt.Println(checkerBlock, "\n", cryptolib.Chunker(ct, blockSize)[1], cryptolib.Chunker(ct, blockSize)[blockIndex])
+				//fmt.Println(checkerBlock, "\n", .Chunker(ct, blockSize)[1], .Chunker(ct, blockSize)[blockIndex])
 				//check if our block[0] matches the target
-				if cryptolib.CompareBlocks(ct, blockSize, 1, blockIndex) {
+				if padding.CompareBlocks(ct, blockSize, 1, blockIndex) {
 					fmt.Print(string(byte(candidate)))
 					known = append(known, byte(candidate))
 					break
@@ -101,5 +103,5 @@ YnkK`
 		panic(err)
 	}
 	v := append(randomPrefix, append(in, decodedSecret...)...)
-	return cryptolib.AESECBEncrypt(v, key)
+	return aes.AESECBEncrypt(v, key)
 }

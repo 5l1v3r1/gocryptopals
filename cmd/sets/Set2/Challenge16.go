@@ -2,11 +2,13 @@ package Set2
 
 import (
 	"bytes"
-	"crypto/aes"
 	"fmt"
 	"strings"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/pkg/aes"
+	"github.com/c-sto/gocryptopals/pkg/cryptobytes"
+	"github.com/c-sto/gocryptopals/pkg/padding"
+	"github.com/c-sto/gocryptopals/pkg/xor"
 )
 
 /*
@@ -42,13 +44,13 @@ Before you implement this attack, answer this question: why does CBC mode have t
 */
 
 func Challenge16() {
-	key = cryptolib.RandomKey()
+	key = aes.RandomKey()
 	//blocksize := aes.BlockSize
 	x := Challenge16_Function1(strings.Repeat("A", 256))
 	y := false
 	var err error
 	//get count of ciphertext
-	chunks := cryptolib.Chunker(x, aes.BlockSize)
+	chunks := cryptobytes.Chunker(x, aes.BlockSize)
 	//blockCount := len(chunks)
 	for i := 0; i < 256; i++ {
 		//most of the encrypted string is known plaintext.
@@ -57,19 +59,19 @@ func Challenge16() {
 		//this means that p = aesdec(11) ^ block[10]
 		//which means that if we flip the bits in the last byte of block 10 and send block 11 as the last block
 		//we should be able to control the ciphertext
-		chunks[10] = cryptolib.XorBytes(
+		chunks[10] = xor.XorBytes(
 			[]byte(strings.Repeat(string(byte(i)), 16)),
 			chunks[10],
 		)
 		//11th chunk should be all 1's at this point
 		//xor everything with 1's to make it 0's
-		chunks[10] = cryptolib.XorBytes(
+		chunks[10] = xor.XorBytes(
 			[]byte(strings.Repeat(string(byte(1)), 16)),
 			chunks[10],
 		)
 		//we want to complete the block, so xor with the desired value to make the thing do the thing
-		chunks[10] = cryptolib.XorBytes(
-			cryptolib.PKCS7([]byte(";admin=true;"), 16),
+		chunks[10] = xor.XorBytes(
+			padding.PKCS7([]byte(";admin=true;"), 16),
 			chunks[10],
 		)
 
@@ -89,9 +91,9 @@ func Challenge16() {
 
 func Challenge16_Function2(input []byte) (bool, error) {
 	//decrypt
-	plaintext := cryptolib.AESCBCDecrypt(input[16:], key, input[:16])
+	plaintext := aes.AESCBCDecrypt(input[16:], key, input[:16])
 	//unpad
-	plaintext, err := cryptolib.PKCS7Unpad(plaintext, 16)
+	plaintext, err := padding.PKCS7Unpad(plaintext, 16)
 	if err != nil {
 		return false, err
 	}
@@ -107,11 +109,11 @@ func Challenge16_Function1(input string) []byte {
 	//concat
 	input = "comment1=cooking%20MCs;userdata=" + input + ";comment2=%20like%20a%20pound%20of%20bacon"
 	//pad
-	padded := cryptolib.PKCS7([]byte(input), 16)
+	padded := padding.PKCS7([]byte(input), 16)
 	//fmt.Println(padded)
 	//encrypt
-	iv := cryptolib.RandomKey()
-	encrypted := cryptolib.AESCBCEncrypt(padded, key, iv)
+	iv := aes.RandomKey()
+	encrypted := aes.AESCBCEncrypt(padded, key, iv)
 	encrypted = append(iv, encrypted...)
 	return encrypted
 }

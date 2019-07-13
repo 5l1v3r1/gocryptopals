@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/c-sto/cryptochallenges_golang/Set1"
-	"github.com/c-sto/cryptochallenges_golang/Set2"
-	"github.com/c-sto/cryptochallenges_golang/Set3"
+	"github.com/c-sto/gocryptopals/cmd/sets/Set1"
+	"github.com/c-sto/gocryptopals/cmd/sets/Set2"
+	"github.com/c-sto/gocryptopals/cmd/sets/Set3"
 )
 
 func main() {
@@ -23,8 +23,9 @@ func main() {
 		panic("Bad challenge number")
 	}
 
-	//can probably tidy this up with some sort of reflect? idk
+	//can probably tidy this up with some sort of refle\ct? idk
 	switch challNumber {
+
 	case 1:
 		Set1.Challenge1()
 	case 2:

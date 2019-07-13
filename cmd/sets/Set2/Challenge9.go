@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
-	//"github.com/c-sto/Cryptochallenges_Golang/Set1"
+	"github.com/c-sto/gocryptopals/pkg/padding"
 )
 
 /*
@@ -26,15 +25,15 @@ So: pad any block to a specific block length, by appending the number of bytes o
 
 func Challenge9() {
 	fmt.Println("Begin Test 9")
-	x := cryptolib.PKCS7([]byte("YELLOW SUBMARINE"), 20)
+	x := padding.PKCS7([]byte("YELLOW SUBMARINE"), 20)
 	if !reflect.DeepEqual(x, []byte("YELLOW SUBMARINE\x04\x04\x04\x04")) {
 		panic(fmt.Sprintf("Bad padding: %v", x))
 	}
-	x = cryptolib.PKCS7([]byte("YELLOW SUBMARINE"), 19)
+	x = padding.PKCS7([]byte("YELLOW SUBMARINE"), 19)
 	if !reflect.DeepEqual(x, []byte("YELLOW SUBMARINE\x03\x03\x03")) {
 		panic(fmt.Sprintf("Bad padding: %v", x))
 	}
-	x = cryptolib.PKCS7([]byte("YELLOW SUBMARINE"), 15)
+	x = padding.PKCS7([]byte("YELLOW SUBMARINE"), 15)
 	if !reflect.DeepEqual(x, []byte("YELLOW SUBMARINE\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e")) {
 		panic(fmt.Sprintf("Bad padding: %v %v", x, []byte("YELLOW SUBMARINE\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e\x0e")))
 	}

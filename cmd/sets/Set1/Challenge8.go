@@ -3,10 +3,11 @@ package Set1
 import (
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"strings"
 
-	"github.com/c-sto/cryptochallenges_golang/cryptolib"
+	"github.com/c-sto/gocryptopals/asset"
+
+	"github.com/c-sto/gocryptopals/pkg/padding"
 )
 
 /*
@@ -24,7 +25,7 @@ Remember that the problem with ECB is that it is stateless and deterministic; th
 
 func Challenge8() {
 	fmt.Println("Test 8 Begin")
-	content, err := ioutil.ReadFile("./resources/challenge8.txt")
+	content, err := asset.Challenge("challenge8.txt")
 	if err != nil {
 		panic("file load error")
 	}
@@ -32,7 +33,7 @@ func Challenge8() {
 	found := false
 	for i, x := range lines {
 		s, _ := hex.DecodeString(x)
-		if y, _ := cryptolib.HasRepeatedBlocks(s, 16); y {
+		if y, _ := padding.HasRepeatedBlocks(s, 16); y {
 			fmt.Println("Identified repeated block on line:", i)
 			found = true
 		}
